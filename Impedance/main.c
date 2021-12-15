@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 
 
@@ -56,12 +57,6 @@ int choix_circuit()
 
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-//lire
-
-//I-b demande les valeurs des composants du circuit
 
 
 double *choixFrequences (int* nbFreq){
@@ -92,6 +87,28 @@ double *choixFrequences (int* nbFreq){
     }
     
     return t_freq;
+
+}
+
+//FILE *pf;
+//if(pf==NULL)
+//{
+
+//}
+//else {
+//fwrite("mot texte", sizeof(char),nbchar,fp);
+//}
+//gnuplot //adresse fichier AfficheBode.p;
+
+void calculImpedance(double**module_tab , double **phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
+{
+    *module_tab = malloc (nbfreq *sizeof(double));
+    *phase_tab = malloc (nbfreq *sizeof(double));
+    switch (choixCircuit)
+    {
+    case ();
+    }
+
 
 }
 
