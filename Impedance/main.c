@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 
 
 //I-b demande les valeurs des composants du circuit
@@ -56,9 +56,7 @@ int choix_circuit()
 
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+
 //lire
 
 //I-b demande les valeurs des composants du circuit
