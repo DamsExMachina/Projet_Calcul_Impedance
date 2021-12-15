@@ -56,6 +56,45 @@ int choix_circuit()
 
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+//lire
+
+//I-b demande les valeurs des composants du circuit
+
+
+double *choixFrequences (int* nbFreq){
+    double f_min, f_max, pas_freq;
+    double *t_freq;
+    printf("Pour combien de frequences voulez vous calculer l'impedance ? \n");
+    scanf("%d",nbFreq);
+    printf("Quelle est votre frequence minimale ?\n");
+    if(*nbFreq==1){
+        scanf("%lf", &f_min);
+        printf("La frequence minimale est : %lf \n",f_min);
+        t_freq = malloc(*nbFreq*sizeof(double));
+        t_freq[0]=f_min;
+        return t_freq;
+    }
+    else {
+        scanf("%lf",&f_min);
+        printf("La frequence minimale est : %lf \n",f_min);
+        printf("Quelle est votre frequence maximale ? \n");
+        scanf("%lf", &f_max);
+        printf("La frequence maximale est : %lf \n", f_max);
+        pas_freq = (f_max-f_min)/(*nbFreq-1);
+        printf("Le pas est : %lf \n",pas_freq);
+        t_freq = malloc(*nbFreq*sizeof(double)*(*nbFreq));
+        for(int i=0; i<*nbFreq; i++){
+            t_freq[i]=f_min+(pas_freq*i);
+        }
+    }
+    
+    return t_freq;
+
+}
+
 
 
 
@@ -70,7 +109,15 @@ int main()
     int numCircuit = choix_circuit();
     valeurComposant(numCircuit, &R,&L,&C);
 
+    double *t_freq;
+    int nb_freq;
 
+    t_freq = choixFrequences(&nb_freq);
+    
+    for (int i = 0; i <nb_freq; i++)
+    {
+        printf("%lf \n",t_freq[i]);
+    }
 
 
 
