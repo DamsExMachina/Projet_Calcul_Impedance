@@ -66,7 +66,7 @@ int choix_circuit()
 
 double *choixFrequences (int* nbFreq){
     double f_min, f_max, pas_freq;
-    double *t_freq;
+    double *t_freq = NULL;
     printf("Pour combien de frequences voulez vous calculer l'impedance ? \n");
     scanf("%d",nbFreq);
     printf("Quelle est votre frequence minimale ?\n");
@@ -78,28 +78,40 @@ double *choixFrequences (int* nbFreq){
         return t_freq;
     }
     else {
-        scanf("%lf",&f_min);
+        scanf("%lf", &f_min);
         // printf("La frequence minimale est : %lf \n",f_min);
         printf("Quelle est votre frequence maximale ? \n");
         scanf("%lf", &f_max);
         // printf("La frequence maximale est : %lf \n", f_max);
         pas_freq = (f_max-f_min)/(*nbFreq-1);
         // printf("Le pas est : %lf \n",pas_freq);
-        t_freq = malloc(*nbFreq*sizeof(double)*(*nbFreq));
+        // printf("Le nombre d'octets du tableau est : %d \n",sizeof(double)*(*nbFreq));
+        t_freq = malloc(sizeof(double)*(*nbFreq));
+        if(t_freq==NULL)
+            exit(0);
+
         for(int i=0; i<*nbFreq; i++){
             t_freq[i]=f_min+(pas_freq*i);
+            // printf("La frequence %lf est : %lf \n", i, t_freq[i]);
         }
-    }
+    }    
     
     return t_freq;
-
 }
 
-void calculImpedance(double**module_tab , double **phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
+void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
 {
-    *module_tab = malloc(nbfreq *sizeof(double));
-    // printf("%d", sizeof(module_tab));
-    *phase_tab = malloc (nbfreq *sizeof(double));
+    double* module_tab;
+    double* phase_tab;
+    module_tab = malloc(nbfreq*sizeof(double));
+    phase_tab = malloc(nbfreq*sizeof(double));
+    if(module_tab==NULL || phase_tab==NULL)
+        exit(0);
+
+    // for(int i=0; i<2; i++){
+    //     *pt_module_tab[i] = i*3;
+    // }
+    int nbCalc = 0;
     for(int i = 0 ; i<nbfreq; i++)
     {
         switch (choixCircuit)
@@ -107,22 +119,24 @@ void calculImpedance(double**module_tab , double **phase_tab , double *tab_freq 
         case (1):
             break;
         case(2):
-            *module_tab[i] = (R*L*2*PI*tab_freq[i])/sqrt(pow(R,2)+pow(L*2*PI*tab_freq[i],2));
-            // printf("%lf", *module_tab[i]);
+            module_tab[i] = (R*L*2*PI*tab_freq[i])/sqrt(pow(R,2)+pow(L*2*PI*tab_freq[i],2));
             break;
         case(3):
             break;
         case(4):
-            *module_tab[i] = (R/(2*PI*C*tab_freq[i]))/sqrt(pow(R,2)+pow(1/(C*2*PI*tab_freq[i]),2));
+            module_tab[i] = (R/(2*PI*C*tab_freq[i]))/sqrt(pow(R,2)+pow(1/(C*2*PI*tab_freq[i]),2));
             break;
         case(5):
             
             break;
         case(6):
-            *module_tab[i] = (L/C)/sqrt(pow(L*2*PI*tab_freq[i]-1/(C*2*PI*tab_freq[i]),2));
+            module_tab[i] = (L/C)/sqrt(pow(L*2*PI*tab_freq[i]-1/(C*2*PI*tab_freq[i]),2));
+            break;
+        default :
             break;
         }
     }
+    *pt_module_tab = module_tab;
 }
 
 
@@ -133,25 +147,31 @@ int main()
     int numCircuit = choix_circuit();
     valeurComposant(numCircuit, &R,&L,&C);
 
-    double *t_freq;
+    double *t_freq = NULL;
     int nb_freq;
 
     t_freq = choixFrequences(&nb_freq);
-    
+
     // for (int i = 0; i <nb_freq; i++)
     // {
-    //     printf("%lf \n",t_freq[i]);
+    //     printf("La frequence n°%lf est : \n", i, t_freq[i]);
     // }
 
-    double *module_tab;
-    double *phase_tab;
+    double *module_tab = NULL;
+    double *phase_tab = NULL;
+
 
     calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
 
+
     for (int i = 0; i <nb_freq; i++)
     {
-        printf("%lf \n", module_tab[i]);
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms. \n", t_freq[i], module_tab[i]);
     }    
+
+    free(module_tab);
+    free(t_freq);
+    free(phase_tab);
 
     return 0;
 }
