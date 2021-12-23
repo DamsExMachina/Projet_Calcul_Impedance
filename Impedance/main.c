@@ -10,28 +10,28 @@ void valeurComposant(int numeroCircuit, double*R, double*L, double*C)
     {
     case(1):
     case(2):
-        printf("Renseignez la valeur de R:\n");
+        printf("Renseignez la valeur de R en Ohms:\n");
         scanf("%lf",R);
-        printf("Renseignez la valeur de L:\n");
+        printf("Renseignez la valeur de L en H:\n");
         scanf("%lf",L);
-        printf("Voici les valeurs de R et L : %lf, %lf\n", *R, *L);
+        printf("Voici les valeurs de R et L : %lf Ohms, %lf H \n", *R, *L);
         break;
     case(3):
     case(4):
-        printf("Renseignez la valeur de R:\n");
+        printf("Renseignez la valeur de R en Ohms:\n");
         scanf("%lf",R);
-        printf("Renseignez la valeur de C:\n");
+        printf("Renseignez la valeur de C en F:\n");
         scanf("%lf",C);
-        printf("Voici les valeurs de R et C : %lf, %lf\n", *R, *C);
+        printf("Voici les valeurs de R et C : %lf Ohms, %lf F\n", *R, *C);
         break;
 
     case(5):
     case(6):
-        printf("Renseignez la valeur de C:\n");
+        printf("Renseignez la valeur de C en F:\n");
         scanf("%lf",C);
-        printf("Renseignez la valeur de L:\n");
+        printf("Renseignez la valeur de L en H:\n");
         scanf("%lf",L);
-        printf("Voici les valeurs de L et C : %lf, %lf\n", *L, *C);
+        printf("Voici les valeurs de L et C : %lf H, %lf F\n", *L, *C);
         break;
     default:
         printf("Veuillez Recommencer\n");
@@ -93,6 +93,66 @@ double *choixFrequences (int* nbFreq){
 
 }
 
+//FILE *pf;
+//if(pf==NULL)
+//{
+
+//}
+//else {
+//fwrite ou fprintf("mot texte", sizeof(char),nbchar,fp);
+//}
+//gnuplot //adresse fichier AfficheBode.p;
+
+
+void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
+{
+
+
+    double* module_tab;
+    double* phase_tab;
+    module_tab = malloc(nbfreq*sizeof(double));
+    phase_tab = malloc(nbfreq*sizeof(double));
+    if(module_tab==NULL || phase_tab==NULL)
+        exit(0);
+
+
+    int nbCalc = 0;
+    for(int i = 0 ; i<nbfreq; i++)
+    {
+        switch (choixCircuit)
+        {
+        case (1):
+            module_tab[i] = sqrt(pow(R,2)+pow(L*2*M_PI*tab_freq[i],2));
+            //phase_tab[i] = atan((L*2*M_PI*tab_freq[i])/R);
+            break;
+        case(2):
+
+            module_tab[i] = (R*L*2*M_PI*tab_freq[i])/sqrt(pow(R,2)+pow(L*2*M_PI*tab_freq[i],2));
+            break;
+        case(3):
+            module_tab[i] = sqrt(pow(R,2)+pow(1/(C*2*M_PI*tab_freq[i]),2));
+            //phase_tab[i] = atan(1/(C*2*M_PI*tab_freq[i])/R);
+            break;
+        case(4):
+
+            module_tab[i] = (R/(2*M_PI*C*tab_freq[i]))/sqrt(pow(R,2)+pow(1/(C*2*M_PI*tab_freq[i]),2));
+            break;
+        case(5):
+            module_tab[i] = sqrt(pow(L*2*M_PI*tab_freq[i],2)+pow(1/(C*2*M_PI*tab_freq[i]),2));
+            //phase_tab[i] = 0;
+
+            break;
+        case(6):
+
+            module_tab[i] = (L/C)/sqrt(pow(L*2*M_PI*tab_freq[i]-1/(C*2*M_PI*tab_freq[i]),2));
+            break;
+        default :
+            break;
+        }
+    }
+    *pt_module_tab = module_tab;
+}
+
 
 
 
@@ -116,6 +176,25 @@ int main()
     {
         printf("%lf \n",t_freq[i]);
     }
+
+    double *module_tab = NULL;
+    double *phase_tab = NULL;
+
+
+    calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
+
+
+    for (int i = 0; i <nb_freq; i++)
+    {
+        printf("%lf \n", module_tab[i]);
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms. \n", t_freq[i], module_tab[i]);
+    }
+
+   free(module_tab);
+   free(t_freq);
+   free(phase_tab);
+
+
 
 
 
