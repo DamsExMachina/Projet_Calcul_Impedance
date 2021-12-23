@@ -120,23 +120,28 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
             break;
         case(2):
             module_tab[i] = (R*L*2*PI*tab_freq[i])/sqrt(pow(R,2)+pow(L*2*PI*tab_freq[i],2));
+            phase_tab[i] = PI/2-atan(L*2*PI*tab_freq[i]/R);
             break;
         case(3):
             break;
         case(4):
             module_tab[i] = (R/(2*PI*C*tab_freq[i]))/sqrt(pow(R,2)+pow(1/(C*2*PI*tab_freq[i]),2));
+            phase_tab[i] = -PI/2-atan(-1/R*C*2*PI*tab_freq[i]);
             break;
         case(5):
-            
             break;
         case(6):
             module_tab[i] = (L/C)/sqrt(pow(L*2*PI*tab_freq[i]-1/(C*2*PI*tab_freq[i]),2));
+            if(L*C!=1/2*PI*tab_freq[i]){
+                phase_tab[i] = PI/2;
+            }
             break;
         default :
             break;
         }
     }
     *pt_module_tab = module_tab;
+    *pt_phase_tab = phase_tab;
 }
 
 
@@ -166,7 +171,8 @@ int main()
 
     for (int i = 0; i <nb_freq; i++)
     {
-        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms. \n", t_freq[i], module_tab[i]);
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads \n", t_freq[i], module_tab[i], phase_tab[i]);
+        printf("\n");
     }    
 
     free(module_tab);
