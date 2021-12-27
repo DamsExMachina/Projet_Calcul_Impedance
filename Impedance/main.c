@@ -96,6 +96,17 @@ double *choixFrequences (int* nbFreq){
     return t_freq;
 }
 
+//FILE *pf;
+//if(pf==NULL)
+//{
+
+//}
+//else {
+//fwrite ou fprintf("mot texte", sizeof(char),nbchar,fp);
+//}
+//gnuplot //adresse fichier AfficheBode.p;
+
+
 void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
 {
     double* module_tab;
@@ -152,6 +163,33 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
     *pt_phase_tab = phase_tab;
 }
 
+void creationFichier(int nbFreq ,double* frequence_tab, double* module_tab, double* phase_tab){
+
+    FILE* fichierDonnees = NULL;
+    fichierDonnees = fopen("Impedance.dat.txt", "w+");
+    fclose(fichierDonnees);
+    if (fichierDonnees != NULL)
+    {
+        // printf("Le fichier est ouvert !\n");
+        for(int i=0; i<nbFreq; i++){
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, "%lf", frequence_tab[i]);
+            fclose(fichierDonnees);
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, " %lf", module_tab[i]);
+            fclose(fichierDonnees);
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, " %lf\n", phase_tab[i]);
+            fclose(fichierDonnees);    
+        }
+    }
+    else
+    {
+        printf("Impossible d'ouvrir le fichier Impedance.dat");
+    }
+
+}
+
 
 int main()
 {
@@ -179,10 +217,21 @@ int main()
 
     for (int i = 0; i <nb_freq; i++)
     {
-        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads \n", t_freq[i], module_tab[i], phase_tab[i]);
-        printf("\n");
-    }    
+        printf("%lf \n",t_freq[i]);
+    }
 
+    double *module_tab = NULL;
+    double *phase_tab = NULL;
+
+
+    calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
+
+    for (int i = 0; i <nb_freq; i++)
+    {
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads. \n", t_freq[i], module_tab[i], phase_tab[i]);
+    }
+
+    creationFichier(nb_freq, t_freq, module_tab, phase_tab);
     free(module_tab);
     free(t_freq);
     free(phase_tab);
