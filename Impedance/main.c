@@ -203,26 +203,8 @@ int main()
 
     t_freq = choixFrequences(&nb_freq);
 
-    // for (int i = 0; i <nb_freq; i++)
-    // {
-    //     printf("La frequence n°%lf est : \n", i, t_freq[i]);
-    // }
-
     double *module_tab = NULL;
     double *phase_tab = NULL;
-
-
-    calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
-
-
-    for (int i = 0; i <nb_freq; i++)
-    {
-        printf("%lf \n",t_freq[i]);
-    }
-
-    double *module_tab = NULL;
-    double *phase_tab = NULL;
-
 
     calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
 
