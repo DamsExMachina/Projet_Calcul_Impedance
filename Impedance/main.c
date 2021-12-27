@@ -166,16 +166,12 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
 
 void creationFichier(int nbFreq ,double* frequence_tab, double* module_tab, double* phase_tab){
 
-    for (int i = 0; i <nbFreq; i++)
-    {
-        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads. \n", frequence_tab[i], module_tab[i], phase_tab[i]);
-    }
     FILE* fichierDonnees = NULL;
     fichierDonnees = fopen("Impedance.dat.txt", "w+");
     fclose(fichierDonnees);
     if (fichierDonnees != NULL)
     {
-        printf("Le fichier est ouvert !\n");
+        // printf("Le fichier est ouvert !\n");
         for(int i=0; i<nbFreq; i++){
             fichierDonnees = fopen("Impedance.dat.txt", "a");
             fprintf(fichierDonnees, "%lf", frequence_tab[i]);
@@ -219,6 +215,10 @@ int main()
 
     calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
 
+    for (int i = 0; i <nb_freq; i++)
+    {
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads. \n", t_freq[i], module_tab[i], phase_tab[i]);
+    }
 
     creationFichier(nb_freq, t_freq, module_tab, phase_tab);
     free(module_tab);
