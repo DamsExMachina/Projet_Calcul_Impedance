@@ -205,11 +205,6 @@ int main()
     int nb_freq;
 
     t_freq = choixFrequences(&nb_freq);
-    
-    for (int i = 0; i <nb_freq; i++)
-    {
-        printf("%lf \n",t_freq[i]);
-    }
 
     double *module_tab = NULL;
     double *phase_tab = NULL;
