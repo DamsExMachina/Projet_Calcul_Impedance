@@ -178,12 +178,10 @@ void afficheResulat(int nbFreq ,double* frequence_tab, double* module_tab, doubl
     printf("Affichage sous forme de liste :             1\n");
     printf("Affichage sous forme de diagramme de Bode : 2\n");
     int choixAffichage=0;
-    scanf("%d", choixAffichage);
+    scanf("%d", &choixAffichage);
     if (choixAffichage==2)
     {   
         system("gnuplot graph.p");
-        // cin.sync();
-        // cin.get();
     }
     else if(choixAffichage==1)
     {
