@@ -19,7 +19,7 @@ void valeurComposant(int numeroCircuit, double*R, double*L, double*C)
         break;
     case(3):
     case(4):
-        printf("Renseignez la valeur de R en Ohms:\n");
+        printf("Renseignez la valeur de R en Ohm:\n");
         scanf("%lf",R);
         printf("Renseignez la valeur de C en F:\n");
         scanf("%lf",C);
@@ -61,8 +61,7 @@ int choix_circuit()
 //I-b demande les valeurs des composants du circuit
 
 
-double *choixFrequences (int* nbFreq)
-{
+double *choixFrequences (int* nbFreq){
     double f_min, f_max, pas_freq;
     double *t_freq = NULL;
     printf("Pour combien de frequences voulez vous calculer l'impedance ? \n");
@@ -96,6 +95,17 @@ double *choixFrequences (int* nbFreq)
     
     return t_freq;
 }
+
+//FILE *pf;
+//if(pf==NULL)
+//{
+
+//}
+//else {
+//fwrite ou fprintf("mot texte", sizeof(char),nbchar,fp);
+//}
+//gnuplot //adresse fichier AfficheBode.p;
+
 
 void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
 {
@@ -153,8 +163,38 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
     *pt_phase_tab = phase_tab;
 }
 
-            }
+void creationFichier(int nbFreq ,double* frequence_tab, double* module_tab, double* phase_tab){
+
+    FILE* fichierDonnees = NULL;
+    fichierDonnees = fopen("Impedance.dat.txt", "w+");
+    fclose(fichierDonnees);
+    if (fichierDonnees != NULL)
+    {
+        // printf("Le fichier est ouvert !\n");
+        for(int i=0; i<nbFreq; i++){
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, "%lf", frequence_tab[i]);
+            fclose(fichierDonnees);
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, " %lf", module_tab[i]);
+            fclose(fichierDonnees);
+            fichierDonnees = fopen("Impedance.dat.txt", "a");
+            fprintf(fichierDonnees, " %lf\n", phase_tab[i]);
+            fclose(fichierDonnees);    
+        }
     }
+    else
+    {
+        printf("Impossible d'ouvrir le fichier Impedance.dat");
+    }
+
+}
+
+
+int main()
+{
+    //test valeur RLC
+    double R=0, L=0, C=0;
     int numCircuit = choix_circuit();
     valeurComposant(numCircuit, &R,&L,&C);
 
@@ -168,10 +208,12 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
 
     calculImpedance(&module_tab, &phase_tab, t_freq, numCircuit, nb_freq, R, L, C);
 
+    for (int i = 0; i <nb_freq; i++)
+    {
+        printf("Le module de l'impedance pour la frequence %lf Hz est %lf ohms et la phase %lf rads. \n", t_freq[i], module_tab[i], phase_tab[i]);
+    }
+
     creationFichier(nb_freq, t_freq, module_tab, phase_tab);
-
-    afficheResulat(nb_freq, t_freq, module_tab, phase_tab);
-
     free(module_tab);
     free(t_freq);
     free(phase_tab);
