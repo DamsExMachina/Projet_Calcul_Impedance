@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846 //On crée une constante avec la valeur de PI
 
-//I-b demande les valeurs des composants du circuit
 void valeurComposant(int numeroCircuit, double*R, double*L, double*C)
 {
     switch (numeroCircuit)
@@ -55,20 +54,15 @@ int choix_circuit()
 
 }
 
-
-//lire
-
-//I-b demande les valeurs des composants du circuit
-
-
 double *choixFrequences (int* nbFreq)
 {
-    double f_min, f_max, pas_freq;
+    double f_min, f_max, pas_freq; 
     double *t_freq = NULL;
+    int type_pas;
     printf("Pour combien de frequences voulez vous calculer l'impedance ? \n");
     scanf("%d",nbFreq);
-    printf("Quelle est votre frequence minimale ?\n");
-    if(*nbFreq==1){
+    if(*nbFreq==1){ //Lorsqu'il n'y a qu'une seule fréquence on ne demande que f_min
+        printf("Quelle est votre frequence minimale ?\n");
         scanf("%lf", &f_min);
         // printf("La frequence minimale est : %lf \n",f_min);
         t_freq = malloc(*nbFreq*sizeof(double));
@@ -76,43 +70,47 @@ double *choixFrequences (int* nbFreq)
         return t_freq;
     }
     else {
+        printf("Quelle type de pas souhaitez vous avoir ?\n1 : Lineaire\n2 : Logarithmique\n");
+        scanf("%d", &type_pas);
+        printf("Quelle est votre frequence minimale ?\n");
         scanf("%lf", &f_min);
-        // printf("La frequence minimale est : %lf \n",f_min);
         printf("Quelle est votre frequence maximale ? \n");
         scanf("%lf", &f_max);
-        // printf("La frequence maximale est : %lf \n", f_max);
-        pas_freq = (f_max-f_min)/(*nbFreq-1);
-        // printf("Le pas est : %lf \n",pas_freq);
-        // printf("Le nombre d'octets du tableau est : %d \n",sizeof(double)*(*nbFreq));
-        t_freq = malloc(sizeof(double)*(*nbFreq));
-        if(t_freq==NULL)
+
+        t_freq = malloc(sizeof(double)*(*nbFreq)); // On fait une allocation dynamique pour un tableau de nbFreq valeurs de type double
+        if(t_freq==NULL) // On vérifie que l'allocation s'est bien déroulée
             exit(0);
 
-        for(int i=0; i<*nbFreq; i++){
-            t_freq[i]=f_min+(pas_freq*i);
-            // printf("La frequence %lf est : %lf \n", i, t_freq[i]);
+        if (type_pas==1){ //En fonction du type de pas on a une formule différente pour la création du tableau de fréquence
+            pas_freq = (f_max-f_min)/(*nbFreq-1); 
+            for(int i=0; i<*nbFreq; i++){
+                t_freq[i]=f_min+(pas_freq*i); //Pour un pas linéaire on incrémente du pas constant
+            }
+        }
+        else if(type_pas==2){
+            pas_freq = f_max/f_min;
+            for(int i=0; i<*nbFreq; i++){
+                t_freq[i]=f_min*pow(pas_freq, (double)i/(*nbFreq-1)); // Pour un pas logarithminque on multiplie par une puissance incrémenté d'un pas constant
+            }
         }
     }    
-    
     return t_freq;
 }
 
 void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *tab_freq , int choixCircuit , int nbfreq , double R , double L , double C)
 {
-    double* module_tab;
+    // On prend en entrée les pointeurs des tableaux qui contiendrons les valeurs d'impédance dans le main
+
+    double* module_tab; // On crée les pointeurs des tableau qui contiendront les valeurs des modules et phases dans cette méthode
     double* phase_tab;
     module_tab = malloc(nbfreq*sizeof(double));
     phase_tab = malloc(nbfreq*sizeof(double));
     if(module_tab==NULL || phase_tab==NULL)
         exit(0);
 
-    // for(int i=0; i<2; i++){
-    //     *pt_module_tab[i] = i*3;
-    // }
-    int nbCalc = 0;
     for(int i = 0 ; i<nbfreq; i++)
     {
-        switch (choixCircuit)
+        switch (choixCircuit) // En fonction du circuit choisi par l'utilisateur on a un calcul d'impédence différent
         {
         case (1):
             module_tab[i] = sqrt(pow(R,2)+pow(L*2*PI*tab_freq[i],2));
@@ -149,7 +147,7 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
             break;
         }
     }
-    *pt_module_tab = module_tab;
+    *pt_module_tab = module_tab; // On fait assigner aux pointeurs, vers lesquels redirigent les pointeurs en entrée, les adresses où l'on a les valeurs calculées 
     *pt_phase_tab = phase_tab;
 }
 
@@ -157,11 +155,11 @@ void calculImpedance(double **pt_module_tab , double **pt_phase_tab , double *ta
 void creationFichier(int nbFreq ,double* frequence_tab, double* module_tab, double* phase_tab)
 {
     FILE* fichierDonnees = NULL;
-    fichierDonnees = fopen("Impedance.dat", "w+");
+    fichierDonnees = fopen("Impedance.dat", "w+"); // On ouvre le fichier en w+ pour effacer toutes les données issues d'une exécution précédente du programme
     if (fichierDonnees != NULL)
     {
         for(int i=0; i<nbFreq; i++){
-            fprintf(fichierDonnees, "%lf %lf %lf\n", frequence_tab[i], module_tab[i], phase_tab[i]);
+            fprintf(fichierDonnees, "%lf %lf %lf\n", frequence_tab[i], module_tab[i], phase_tab[i]); // On écrit dans le fichier ligne par ligne
         }
         fclose(fichierDonnees);
     }
